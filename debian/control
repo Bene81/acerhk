@@ -1,0 +1,22 @@
+Source: acerhk
+Section: net
+Priority: optional
+Maintainer: Kel Modderman <kel@otaku42.de>
+Uploaders: Stefan Lippers-Hollmann <s.l-h@gmx.de>
+Build-Depends: cdbs, debhelper (>= 5.0.37), bzip2, patchutils
+Standards-Version: 3.7.2
+
+Package: acerhk-source
+Architecture: i386
+Depends: debhelper (>= 5.0.37), module-assistant, bzip2
+Description: Acer Hotkey driver for Linux
+ This driver will give access to the special keys on notebooks of the
+ Acer Travelmate series, which are not handled by the keyboard
+ driver. It also works on notebooks from other manufacturers (some Medion,
+ Fujitsu-Siemens, ...).
+ .
+ It also has some other related functionality (depending on the model):
+  - controlling LEDs (Mail, Wireless)
+  - enable/disable wireless hardware
+ .
+ http://www.informatik.hu-berlin.de/~tauber/acerhk/
