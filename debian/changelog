@@ -1,3 +1,9 @@
+acerhk (0.5.35-2) unstable; urgency=low
+
+  * fix upstream contact information in acerhk.
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 30 Mar 2007 21:22:02 +0200
+
 acerhk (0.5.35-1) unstable; urgency=low
 
   * New upstream version.
