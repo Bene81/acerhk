@@ -1,3 +1,10 @@
+acerhk (0.5.35-4) UNRELEASED; urgency=low
+
+  * Update debian/watch for new upstream location, however they seem to filter
+    uscan agent at http://www.cakey.de/acerhk/.
+
+ -- Kel Modderman <kel@otaku42.de>  Mon, 09 Apr 2007 13:35:51 +1000
+
 acerhk (0.5.35-3) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
