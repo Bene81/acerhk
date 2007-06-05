@@ -1,4 +1,4 @@
-acerhk (0.5.35-4) UNRELEASED; urgency=low
+acerhk (0.5.35-4) unstable; urgency=low
 
   * Update debian/watch for new upstream location, however they seem to filter
     uscan agent at http://www.cakey.de/acerhk/.
