@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: acerhk-modules-_KVERS_
 Architecture: i386
-Depends: linux-image-_KVERS_ | kernel-image-_KVERS_
+Depends: linux-image-_KVERS_
 Provides: acerhk-modules
 Description: Acer Hotkey driver for Linux (kernel _KVERS_)
  This package contains the loadable kernel modules for the acerhk
