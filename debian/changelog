@@ -1,3 +1,9 @@
+acerhk (0.5.35-6) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 02 Aug 2007 23:23:44 +0200
+
 acerhk (0.5.35-5) unstable; urgency=low
 
   * Remove reference to obsolete kernel-image-_KVERS_ in
