@@ -1,8 +1,9 @@
 acerhk (0.5.35-6) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
+  * add VCS control headers.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 02 Aug 2007 23:23:44 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Tue, 11 Sep 2007 20:03:41 +0200
 
 acerhk (0.5.35-5) unstable; urgency=low
 
