@@ -1,10 +1,9 @@
-acerhk (0.5.35-6) UNRELEASED; urgency=low
+acerhk (0.5.35-6) unstable; urgency=low
 
-  * NOT RELEASED YET
   * add VCS control headers.
   * update syntax for Vcs headers in debian/control
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 07 Oct 2007 14:35:47 +0200
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Thu, 25 Oct 2007 18:28:21 +0200
 
 acerhk (0.5.35-5) unstable; urgency=low
 
