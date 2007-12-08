@@ -5,11 +5,12 @@ Maintainer: Kel Modderman <kel@otaku42.de>
 Uploaders: Stefan Lippers-Hollmann <s.l-h@gmx.de>
 Build-Depends: cdbs, debhelper (>= 5.0.37), bzip2, patchutils
 Standards-Version: 3.7.3
-Vcs-Svn: svn://svn.berlios.de/fullstory/acerhk/trunk
+Vcs-Svn: svn://svn.berlios.de/fullstory/acerhk/trunk/
 Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/acerhk/trunk/
+Homepage: http://www.informatik.hu-berlin.de/~tauber/acerhk/
 
 Package: acerhk-source
-Architecture: i386
+Architecture: all
 Depends: debhelper (>= 5.0.37), module-assistant, bzip2
 Description: Acer Hotkey driver for Linux
  This driver will give access to the special keys on notebooks of the
@@ -20,5 +21,3 @@ Description: Acer Hotkey driver for Linux
  It also has some other related functionality (depending on the model):
   - controlling LEDs (Mail, Wireless)
   - enable/disable wireless hardware
- .
- http://www.informatik.hu-berlin.de/~tauber/acerhk/

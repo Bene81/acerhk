@@ -1,9 +1,11 @@
-acerhk (0.5.35-7) UNRELEASED; urgency=low
+acerhk (0.5.35-7) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * use official Homepage tag.
   * update to Standards-Version 3.7.3, no changes necessary.
+  * kernel 2.6.24 compatibility.
+  * make acerhk-source arch=all, the module package itself remains arch=i386.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Mon, 03 Dec 2007 11:54:23 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 08 Dec 2007 01:41:32 +0100
 
 acerhk (0.5.35-6) unstable; urgency=low
 
