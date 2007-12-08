@@ -1,3 +1,9 @@
+acerhk (0.5.35-9) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 08 Dec 2007 13:08:14 +0100
+
 acerhk (0.5.35-8) unstable; urgency=low
 
   * fix debian/watch.
