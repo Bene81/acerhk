@@ -6,6 +6,7 @@ Build-Depends: debhelper (>= 5.0.37), bzip2
 Standards-Version: 3.7.3
 Vcs-Svn: svn://svn.berlios.de/fullstory/acerhk/trunk
 Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/acerhk/trunk/
+Homepage: http://www.informatik.hu-berlin.de/~tauber/acerhk/
 
 Package: acerhk-modules-_KVERS_
 Architecture: i386

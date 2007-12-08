@@ -1,2 +1,3 @@
 version=3
-http://www.cakey.de/acerhk/archives/acerhk-(\d+.*)\.tgz debian uupdate
+http://www.cakey.de/acerhk/ \
+	archives/acerhk-([\.0-9]+)\.tgz
