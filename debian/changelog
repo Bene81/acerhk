@@ -1,8 +1,8 @@
-acerhk (0.5.35-9) UNRELEASED; urgency=low
+acerhk (0.5.35-9) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * fix Homepage tag to new location.
 
- -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sat, 08 Dec 2007 13:08:14 +0100
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Sun, 16 Dec 2007 15:50:23 +0100
 
 acerhk (0.5.35-8) unstable; urgency=low
 

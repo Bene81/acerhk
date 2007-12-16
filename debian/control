@@ -7,7 +7,7 @@ Build-Depends: cdbs, debhelper (>= 5.0.37), bzip2, patchutils
 Standards-Version: 3.7.3
 Vcs-Svn: svn://svn.berlios.de/fullstory/acerhk/trunk/
 Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/acerhk/trunk/
-Homepage: http://www.informatik.hu-berlin.de/~tauber/acerhk/
+Homepage: http://www.cakey.de/acerhk/
 
 Package: acerhk-source
 Architecture: all
