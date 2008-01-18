@@ -1,3 +1,9 @@
+acerhk (0.5.35-11) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Stefan Lippers-Hollmann <s.l-h@gmx.de>  Fri, 18 Jan 2008 22:51:18 +0100
+
 acerhk (0.5.35-10) unstable; urgency=low
 
   * update to debhelper compat 6.
