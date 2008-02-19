@@ -1,22 +1,57 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
 
-install/acerhk-source::
-	# Enforce executable bit on debian/rules, and create directory
-	# structure for modules source
+include /usr/share/quilt/quilt.make
+
+build: build-stamp
+build-stamp: $(QUILT_STAMPFN)
+	dh_testdir
+	touch $@
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	dh_clean build-stamp install-stamp
+
+install: build install-stamp
+install-stamp:
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	
 	install -D -m 0755 debian/rules.modules \
 		debian/tmp/modules/acerhk/debian/rules
 	
-	# Prepare the other debian stuff
 	for f in *.modules.in control compat copyright changelog; do \
 		install -m 0644 debian/$$f debian/tmp/modules/acerhk/debian/; \
 	done
 	
-	# Prepare upstream source
 	install -m 0644 Makefile *.[ch] debian/tmp/modules/acerhk/
 		
-	# Prepare the debian source tarball
+	mkdir -p debian/acerhk-source/usr/src/
 	tar jcf debian/acerhk-source/usr/src/acerhk.tar.bz2 \
 		-C debian/tmp modules
+	
+	touch $@
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_install
+	dh_installdocs
+	dh_installchangelogs
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-indep: build install
+# We have nothing to do by default.
+
+binary: binary-indep binary-arch
+.PHONY: build clean install binary-indep binary-arch binary
