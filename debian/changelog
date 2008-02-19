@@ -1,8 +1,8 @@
-acerhk (0.5.35-11) UNRELEASED; urgency=low
+acerhk (0.5.35-11) unstable; urgency=low
 
   [ Stefan Lippers-Hollmann ]
-  * NOT RELEASED YET
   * add years and contributors to debian/copyright.
+  * refresh quilt patches, actually just strip timestamps.
 
   [ Kel Modderman ]
   * Drop dependency on cdbs, debian/rules now is debhelper centric.
