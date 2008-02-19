@@ -6,11 +6,12 @@ acerhk (0.5.35-11) UNRELEASED; urgency=low
 
   [ Kel Modderman ]
   * Drop dependency on cdbs, debian/rules now is debhelper centric.
-  * Make binary package i386 only. No Other arch can make use of this module.
   * Convert to quilt patch system, build-depend on quilt.
   * debian/acerhk-source.dirs is no longer required.
+  * Versioned dependency on debhelper >= 6 for acerhk-source too, as the compat
+    level is set to that.
 
- -- Kel Modderman <kel@otaku42.de>  Tue, 19 Feb 2008 14:03:43 +1000
+ -- Kel Modderman <kel@otaku42.de>  Tue, 19 Feb 2008 20:11:20 +1000
 
 acerhk (0.5.35-10) unstable; urgency=low
 

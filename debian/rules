@@ -37,6 +37,9 @@ install-stamp:
 	touch $@
 
 binary-arch: build install
+# We have nothing to do by default.
+
+binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_install
@@ -49,9 +52,6 @@ binary-arch: build install
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
-
-binary-indep:
-# We have nothing to do by default.
 
 binary: binary-indep binary-arch
 .PHONY: build clean install binary-indep binary-arch binary
