@@ -47,12 +47,19 @@
 
 #include <linux/version.h>
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
-#define KERNEL26
-#include <linux/moduleparam.h>
-#else
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
 #include <linux/modversions.h>
+#define KERNEL_PRE_26
+#else
+#include <linux/moduleparam.h>
+# if LINUX_VERSION_CODE <= KERNEL_VERSION(3,10,0)
+#   define KERNEL26
+# else
+#   define KERNEL311
+# endif
 #endif
+
+
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,15)
 #define STATIC_INPUT_DEV
@@ -99,7 +106,7 @@ static int wlan_state=-1;
 static int bluetooth_state=-1;
 static int verbose;
 static unsigned int force_series;
-#ifdef KERNEL26
+#ifndef KERNEL_PRE_26
 module_param(poll, int, 0444);
 module_param(autowlan, int, 0444);
 module_param(usedritek, int, 0444);
@@ -193,7 +200,7 @@ static void stop_blinking(void);
 #define EC_CNTL_REG		    0x66	/* Controller command register of EC (W) */
 #define EC_DATA_REG		    0x62	/* EC data register (R/W) */
 
-#ifdef KERNEL26
+#ifndef KERNEL_PRE_26
 
 #include <linux/preempt.h>
 
@@ -208,7 +215,12 @@ static void stop_blinking(void);
 #endif
 
 #define preempt_disable()		do { } while (0)
-#define preempt_enable_no_resched()	do { } while (0)
+static inline void preempt_enable_no_resched()
+{
+    do {
+        ;
+    } while (0);
+}
 #define preempt_enable()		do { } while (0)
 #define preempt_check_resched()		do { } while (0)
 #include <linux/pc_keyb.h>
@@ -236,7 +248,7 @@ static void send_kbd_cmd(unsigned char cmd, unsigned char val)
       outb(cmd, KBD_CNTL_REG);
     if (!my_i8042_wait_write())
       outb(val, KBD_DATA_REG);
-    preempt_enable_no_resched();
+    do { } while (0);
   } else {
     printk(KERN_INFO"acerhk: request for accessing EC ignored\n"
            KERN_INFO"acerhk: Use of dritek keyboard extension not enabled, use module\n"
@@ -265,7 +277,7 @@ static void send_ec_cmd(unsigned char cmd, unsigned char val)
       outb(cmd, EC_CNTL_REG);
     if (!my_i8042_wait_ecwrite())
       outb(val, EC_DATA_REG);
-    preempt_enable_no_resched();
+    do { } while (0);
   } else {
     printk(KERN_INFO"acerhk: request for accessing EC ignored\n"
            KERN_INFO"acerhk: Use of dritek keyboard extension not enabled, use module\n"
@@ -362,7 +374,7 @@ static void enable_wireless_ec(void)
       outb(0xd2, EC_DATA_REG);
     if (!my_i8042_wait_ecwrite())
       outb(0x01, EC_DATA_REG);
-    preempt_enable_no_resched();
+    do { } while (0);
   }
   acerhk_wlan_state = 1;
 }
@@ -378,7 +390,7 @@ static void disable_wireless_ec(void)
       outb(0xd2, EC_DATA_REG);
     if (!my_i8042_wait_ecwrite())
       outb(0x00, EC_DATA_REG);
-    preempt_enable_no_resched();
+    do { } while (0);
   }
   acerhk_wlan_state = 0;
 }
@@ -430,7 +442,7 @@ static void enable_mail_led_ec_3(void)
       outl(0x80008894, 0xCF8);
     if (!my_i8042_wait_write())
       outw(0xC061, 0xCFC);
-    preempt_enable_no_resched();
+    do { } while (0);
   }
 }
 static void disable_mail_led_ec_3(void)
@@ -443,7 +455,7 @@ static void disable_mail_led_ec_3(void)
       outl(0x80008894, 0xCF8);
     if (!my_i8042_wait_write())
       outw(0xC060, 0xCFC);
-    preempt_enable_no_resched();
+    do { } while (0);
   }
 }
 
@@ -573,10 +585,11 @@ static asmlinkage void call_bios_6xx(struct register_buffer *buf)
 						 "movl %%edx, 12(%%ebp)\n\t"
 						 "movl %%edi, 16(%%ebp)\n\t"
 						 "movl %%esi, 20(%%ebp)\n\t"
-						 "popa\n\t"
+             "popa\n\t"
+             "popl %%ebp\n\t"
 						 :
 						 :"m" (bios_routine), "m" (buf)
-						 :"%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi", "%ebp"
+						 :"%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi"
 						 );
       local_irq_enable();
   }
@@ -608,10 +621,11 @@ static asmlinkage void call_bios_52x(struct register_buffer *buf)
 						 "movl %%edx, 12(%%ebp)\n\t"
 						 "movl %%edi, 16(%%ebp)\n\t"
 						 "movl %%esi, 20(%%ebp)\n\t"
-						 "popa\n\t"
+             "popa\n\t"
+             "popl %%ebp\n\t"
 						 :
 						 :"m" (bios_routine), "m" (preg400), "m" (buf)
-						 :"%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi", "%ebp"
+						 :"%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi"
 						 );
       local_irq_enable();
   }
@@ -639,7 +653,7 @@ static int get_fnkey_event(void)
   regs.edx = 0;
   preempt_disable();
   call_bios(&regs);
-  preempt_enable_no_resched();
+  do { } while (0);
   return regs.eax & 0xffff;
 }
 
@@ -657,7 +671,7 @@ static int get_thermal_event(void)
     regs.ebx = 0x12e;
     preempt_disable();
     call_bios(&regs);
-    preempt_enable_no_resched();
+    do { } while (0);
     if (verbose > 3)
       printk(KERN_INFO"acerhk: thermal event = 0x%x\n", regs.eax);
   } else {
@@ -684,7 +698,7 @@ static int pbutton_fct(void)
     regs.ecx = 0x2;
     preempt_disable();
     call_bios(&regs);
-    preempt_enable_no_resched();
+    do { } while (0);
     if (verbose > 3)
       printk(KERN_INFO"acerhk: pbutton = 0x%x\n", regs.eax);
   } else {
@@ -714,7 +728,7 @@ static int wbutton_fct_1(int val)
     regs.ebx = ((val & 0xff) << 8) | 0x34;
     preempt_disable();
     call_bios(&regs);
-    preempt_enable_no_resched();
+    do { } while (0);
     if (verbose > 3)
       printk(KERN_INFO"acerhk: wbutton1 = 0x%x\n", regs.eax);
   } else {
@@ -743,7 +757,7 @@ static int wbutton_fct_2(int val)
     regs.ebx = ((val & 0xff) << 8) | 0x35;
     preempt_disable();
     call_bios(&regs);
-    preempt_enable_no_resched();
+    do { } while (0);
     if (verbose > 3)
       printk(KERN_INFO"acerhk: wbutton2 = 0x%x\n", regs.eax);
   } else {
@@ -768,7 +782,7 @@ static int get_cmos_index(void)
   regs.ebx = 0x51C;
   preempt_disable();
   call_bios(&regs);
-  preempt_enable_no_resched();
+  do { } while (0);
   cmos_index = regs.ecx & 0xff;
   if (verbose)
     printk(KERN_INFO"acerhk: cmos index set to 0x%x\n", cmos_index);
@@ -817,7 +831,7 @@ static int set_mail_led(int val)
     regs.ebx = ((val & 0xff) << 8) | 0x31;
     preempt_disable();
     call_bios(&regs);
-    preempt_enable_no_resched();
+    do { } while (0);
     if (verbose > 3)
       printk(KERN_INFO"acerhk: mail led set to = 0x%x\n", val);
   } else if (acerhk_model_features & TM_F_MAIL_LED_EC) {
@@ -856,7 +870,7 @@ static int launch_connect(int val)
     regs.ebx = ((val & 0xff) << 8) | 0x2e;
     preempt_disable();
     call_bios(&regs);
-    preempt_enable_no_resched();
+    do { } while (0);
     if (verbose > 3)
       printk(KERN_INFO"acerhk: connect(%d) = 0x%x\n", val, regs.eax);
   } else {
@@ -1248,7 +1262,7 @@ static void __init setup_keymap_model(unsigned int series)
     acerhk_key2name[18] = k_p2;
     acerhk_key2name[19] = k_p3;
     acerhk_key2name[48] = k_wireless;
-    break;
+    break; 
   case 42200:
     /* Medion MD42200, 7 keys, no setup */
     acerhk_key2name[2] = k_none;
@@ -1909,7 +1923,7 @@ static unsigned int __init determine_laptop_series(char * str)
         printk(KERN_INFO"acerhk: model string indicates FS AMILO Pro (V2000) series\n");
       series = 7400;
       break;
-    case 'A':   /* AMILO Axxxx - added by damagedspline@aim.com */
+    case 'A':   /* AMILO Axxxx - added by damagedspline@aim.com */ 
       switch (str[7]) {
          case '1': /* AMILO A1xxx */
            if (verbose > 1)
@@ -1929,7 +1943,7 @@ static unsigned int __init determine_laptop_series(char * str)
     if ((medionmodel = COLUSSI("WIM 2090", 8, reg1, AREA_SIZE)) >= 0) {
       printk(KERN_INFO"acerhk: found Medion model string:'%s'\n", (char*)reg1+medionmodel);
       series = 97600;
-    }
+    } 
     else if ((medionmodel = COLUSSI("WIM 2040", 4, reg1, AREA_SIZE)) >= 0) {
       printk(KERN_INFO"acerhk: found Medion model string:'%s'\n", (char*)reg1+medionmodel);
       series = 96500;			
@@ -2229,7 +2243,7 @@ static void init_input(void)
 {
   int i;
 
-#ifndef KERNEL26
+#ifdef KERNEL_PRE_26
   /* request keyboard input module */
   request_module("keybdev");
   if (verbose > 3)
@@ -2354,8 +2368,12 @@ static int acerhk_proc_init(void)
     }												\
   } while(0)
 
-static int pc_proc_infos( char *buffer, int *len,
-                          off_t *begin, off_t offset, int size )
+static int pc_proc_infos(
+#ifdef KERNEL311
+   char *buffer, int *len, loff_t *begin, loff_t offset, size_t size)
+#else
+  char *buffer, int *len, off_t *begin, off_t offset, int size)
+#endif
 {
   PRINT_PROC( "Acer hotkeys version %s\n", ACERHK_VERSION);
   PRINT_PROC( "Model(Type)\t: %s(", acerhk_model_string);
@@ -2407,39 +2425,72 @@ static int pc_proc_infos( char *buffer, int *len,
   return (1);
 }
 
-static int acerhk_proc_info( char *buffer, char **start, off_t offset,
-                             int size, int *eof, void *data )
+static int acerhk_proc_info(
+#ifdef KERNEL311
+  struct file *file, char *buffer, size_t size, loff_t *offset)
+#else
+  char *buffer, char **start, off_t offset, int size, int *eof, void *data )
+#endif
 {
   int len = 0;
+#ifdef KERNEL311
+  loff_t begin = 0;
+#else
   off_t begin = 0;
-  
-  *eof = pc_proc_infos( buffer, &len, &begin, offset, size );
-  
+#endif
+
+#ifdef KERNEL311  
+  pc_proc_infos(buffer, &len, &begin, *offset, size);
+#else
+  pc_proc_infos(buffer, &len, &begin, offset, size);
+#endif
+
+#ifdef KERNEL311
+  if (*offset >= begin + len)
+#else
   if (offset >= begin + len)
+#endif
     return( 0 );
-  *start = buffer + (offset - begin);
-  return( size < begin + len - offset ? size : begin + len - offset );
-  
+  return 
+#ifdef KERNEL311
+  ((size < begin + len - *offset) ? size : (begin + len - *offset));
+#else
+  ((size < begin + len - offset) ? size : (begin + len - offset));
+#endif
 }
 
-static int acerhk_proc_key( char *buffer, char **start, off_t offset,
-                            int size, int *eof, void *data )
+static int acerhk_proc_key(
+#ifdef KERNEL311
+  struct file *file, char *buffer, size_t size, loff_t *offset)
+#else
+  char *buffer, char **start, off_t offset, int size, int *eof, void *data )
+#endif
 {
   if (size >= 5 && offset == 0) {
     if (acerhk_type == TM_dritek || acerhk_polling_state == 1) {
-      snprintf(buffer+offset, size, "n/a\n");
+#ifdef KERNEL311
+      snprintf(buffer + *offset, size, "n/a\n");
+#else
+      snprintf(buffer + offset, size, "n/a\n");
+#endif
     } else {
-      snprintf(buffer+offset, size, "0x%02x\n", filter_idle_value(get_fnkey_event()));
+#ifdef KERNEL311
+      snprintf(buffer + *offset, size, "0x%02x\n", filter_idle_value(get_fnkey_event()));
+#else
+      snprintf(buffer + offset, size, "0x%02x\n", filter_idle_value(get_fnkey_event()));
+#endif
     }
-    *eof = 1;
     return 5;
   }
-  *eof = 1;
   return 0;
 }
 
-static int acerhk_proc_led(struct file* file, const char* buffer,
-                           unsigned long count, void* data)
+static int acerhk_proc_led(
+#ifdef KERNEL311
+  struct file *file, char *buffer, size_t count, loff_t *offset)
+#else
+  struct file* file, const char* buffer, unsigned long count, void* data)
+#endif
 {
   char str[4];
   int len;
@@ -2458,8 +2509,12 @@ static int acerhk_proc_led(struct file* file, const char* buffer,
   return len;
 }
 
-static int acerhk_proc_wirelessled(struct file* file, const char* buffer,
-                                   unsigned long count, void* data)
+static int acerhk_proc_wirelessled(
+#ifdef KERNEL311
+  struct file *file, char __user *buffer, size_t count, loff_t *offset)
+#else
+  struct file* file, const char* buffer, unsigned long count, void* data)
+#endif
 {
   char str[4];
   int len;
@@ -2501,8 +2556,12 @@ static int acerhk_proc_wirelessled(struct file* file, const char* buffer,
    the kernel.
 
  */
-static int acerhk_proc_blueled(struct file* file, const char* buffer,
-                               unsigned long count, void* data)
+static int acerhk_proc_blueled(
+#ifdef KERNEL311
+  struct file *file, char *buffer, size_t count, loff_t *offset)
+#else
+  struct file* file, const char* buffer, unsigned long count, void* data)
+#endif
 {
   const int MAXLEN=11;
   char str[MAXLEN];
@@ -2582,7 +2641,7 @@ static void do_debug(const char* buffer, unsigned long len)
     break;
   case 'i':
   case '1':
-#ifndef KERNEL26
+#ifdef KERNEL_PRE_26
     MOD_INC_USE_COUNT;
 #endif
     break;
@@ -2667,15 +2726,19 @@ static void do_debug(const char* buffer, unsigned long len)
   case 'd':
   case '0':
   default:
-#ifndef KERNEL26
+#ifdef KERNEL_PRE_26
     MOD_DEC_USE_COUNT;
 #endif
     break;
   }
 }
 
-static int acerhk_proc_debug(struct file* file, const char* buffer,
-                             unsigned long count, void* data)
+static int acerhk_proc_debug(
+#ifdef KERNEL311
+  struct file *file, char *buffer, size_t count, loff_t *offset)
+#else
+  struct file* file, const char* buffer, unsigned long count, void* data)
+#endif
 {
   char str[5];
   int len;
@@ -2689,6 +2752,34 @@ static int acerhk_proc_debug(struct file* file, const char* buffer,
   do_debug(str, len);
   return len;
 }
+#endif
+
+#ifdef KERNEL311
+static struct file_operations fops_info = {
+    read : acerhk_proc_info
+};
+
+static struct file_operations fops_key = {
+      read : acerhk_proc_key
+};
+
+static struct file_operations fops_led = {
+      write : acerhk_proc_led
+};
+
+static struct file_operations fops_wireless = {
+      write : acerhk_proc_wirelessled
+};
+
+static struct file_operations fops_blue = {
+      write : acerhk_proc_blueled
+};
+
+#ifdef ACERDEBUG
+static struct file_operations fops_debug = {
+      write : acerhk_proc_debug
+};
+#endif // ACERDEBUG
 #endif
 
 static int acerhk_proc_init(void)
@@ -2706,8 +2797,12 @@ static int acerhk_proc_init(void)
     proc_acer_dir->owner = THIS_MODULE;
 #endif
     /* now create several files, first general info ... */
-    entry = create_proc_read_entry("info",
-                                   0444, proc_acer_dir, acerhk_proc_info, NULL);
+    #ifdef KERNEL311
+    entry = proc_create("info", 0444, proc_acer_dir, &fops_info);
+    #else
+    entry = create_proc_read_entry(
+                        "info", 0444, proc_acer_dir, acerhk_proc_info, NULL);
+    #endif
     if (entry == NULL) {
       printk(KERN_INFO"acerhk: cannot create info file\n");
       remove_proc_entry("driver/acerhk", NULL);
@@ -2717,8 +2812,12 @@ static int acerhk_proc_init(void)
       entry->owner = THIS_MODULE;
 #endif
       /* ... last pressed key ... */
-      entry = create_proc_read_entry("key",
-                                     0444, proc_acer_dir, acerhk_proc_key, NULL);
+      #ifdef KERNEL311
+      entry = proc_create("key", 0444, proc_acer_dir, &fops_key);
+      #else
+      entry = create_proc_read_entry(
+                          "key", 0444, proc_acer_dir, acerhk_proc_key, NULL);
+      #endif
       if (entry == NULL) {
         printk(KERN_INFO"acerhk: cannot create key file\n");
         remove_proc_entry("info", proc_acer_dir);
@@ -2729,7 +2828,11 @@ static int acerhk_proc_init(void)
         entry->owner = THIS_MODULE;
 #endif
         /* ... and led control file */
+        #ifdef KERNEL311
+        entry = proc_create("led", 0222, proc_acer_dir, &fops_led);
+        #else
         entry = create_proc_entry("led", 0222, proc_acer_dir);
+        #endif
         if (entry == NULL) {
           printk(KERN_INFO"acerhk: cannot create LED file\n");
           remove_proc_entry("info", proc_acer_dir);
@@ -2738,12 +2841,18 @@ static int acerhk_proc_init(void)
           retval = 0;
         }
         else {
+          #ifndef KERNEL311
           entry->write_proc = acerhk_proc_led;
+          #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
           entry->owner = THIS_MODULE;
 #endif
           /* ... and wireless led controll file */
+          #ifdef KERNEL311
+          entry = proc_create("wirelessled", 0222, proc_acer_dir, &fops_wireless);
+          #else
           entry = create_proc_entry("wirelessled", 0222, proc_acer_dir);
+          #endif
           if (entry == NULL) {
             printk(KERN_INFO"acerhk: cannot create wirelessled file\n");
             remove_proc_entry("info", proc_acer_dir);
@@ -2753,12 +2862,18 @@ static int acerhk_proc_init(void)
             retval = 0;
           }
           else {
+            #ifndef KERNEL311
             entry->write_proc = acerhk_proc_wirelessled;
+            #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
             entry->owner = THIS_MODULE;
 #endif
             /* ... and bluetooth led controll file */
+            #ifdef KERNEL311
+            entry = proc_create("blueled", 0222, proc_acer_dir, &fops_blue);
+            #else
             entry = create_proc_entry("blueled", 0222, proc_acer_dir);
+            #endif
             if (entry == NULL) {
               printk(KERN_INFO"acerhk: cannot create blueled file\n");
               remove_proc_entry("info", proc_acer_dir);
@@ -2768,14 +2883,20 @@ static int acerhk_proc_init(void)
               remove_proc_entry("driver/acerhk", NULL);
               retval = 0;
             } else {
+              #ifndef KERNEL311
               entry->write_proc = acerhk_proc_blueled;
+              #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
               entry->owner = THIS_MODULE;
 #endif
               retval = 1;
 #ifdef ACERDEBUG
               /* add extra file for debugging purposes */
+              #ifdef KERNEL311
+              entry = proc_create("debug", 0222, proc_acer_dir, &fops_debug);
+              #else
               entry = create_proc_entry("debug", 0222, proc_acer_dir);
+              #endif
               if (entry == NULL) {
                 printk(KERN_INFO"acerhk: cannot create debug file\n");
                 remove_proc_entry("info", proc_acer_dir);
@@ -2827,10 +2948,10 @@ static void acerhk_proc_cleanup(void)
 
 /* {{{ file operations */
 
-static long acerhk_unlocked_ioctl( struct file *file,
-                         unsigned int cmd, unsigned long arg )
+static int acerhk_unlocked_ioctl(
+                struct file *file, unsigned int cmd, unsigned long arg )
 {
-  long retval;
+  int retval;
   switch( cmd ) {
   case ACERHK_GET_KEYCOUNT:
     {
@@ -2937,13 +3058,13 @@ static int acerhk_resume(struct platform_device *dev)
 #endif
 
 static struct file_operations acerhk_fops = {
-  owner:        THIS_MODULE,
-  unlocked_unlocked_ioctl:        acerhk_ioctl,
-  open:         acerhk_open,
+  owner:                THIS_MODULE,
+  unlocked_ioctl:       acerhk_unlocked_ioctl,
+  open:                 acerhk_open,
 #ifdef ACERDEBUG
-  write:        acerhk_write,
+  write:                acerhk_write,
 #endif
-  release:      acerhk_release,
+  release:              acerhk_release,
 };
 
 static struct miscdevice acerhk_misc_dev = {
@@ -2954,7 +3075,11 @@ static struct miscdevice acerhk_misc_dev = {
 
 /* }}} */
 
+#ifdef KERNEL311
+static void __init model_init(void)
+#else
 static void __devinit model_init(void)
+#endif
 {
   /* set callroutine, features and keymap for model */
   setup_model_features(acerhk_series);
@@ -2978,10 +3103,17 @@ static void __devinit model_init(void)
   init_timer(&acerhk_timer_blinking);
 }
 
-
+#ifdef KERNEL311
+static int __exit acerhk_remove(struct platform_device *dev);
+#else
 static int __devexit acerhk_remove(struct platform_device *dev);
+#endif
 
+#ifdef KERNEL311
+static int __init acerhk_probe(struct platform_device *dev)
+#else
 static int __devinit acerhk_probe(struct platform_device *dev)
+#endif
 {
   int ret;
 
@@ -3063,7 +3195,11 @@ static int __devinit acerhk_probe(struct platform_device *dev)
   return ret;
 }
 
+#ifdef KERNEL311
+static int __exit acerhk_remove(struct platform_device *dev)
+#else
 static int __devexit acerhk_remove(struct platform_device *dev)
+#endif
 {
   acerhk_proc_cleanup();
   stop_blinking();
@@ -3089,8 +3225,12 @@ static struct platform_driver acerhk_driver = {
 		.name	= "acerhk",
 		.owner	= THIS_MODULE,
 	},
-	.probe		= acerhk_probe,
-	.remove		= __devexit_p(acerhk_remove),
+  .probe		= acerhk_probe,
+  #ifdef KERNEL311
+  .remove		= __exit_p(acerhk_remove),
+  #else
+  .remove		= __devexit_p(acerhk_remove),
+  #endif
 #ifdef CONFIG_PM
 	.resume		= acerhk_resume,
 #endif
@@ -3140,8 +3280,9 @@ module_exit(acerhk_exit);
 MODULE_AUTHOR("Olaf Tauber");
 MODULE_DESCRIPTION("AcerHotkeys extra buttons keyboard driver");
 MODULE_LICENSE("GPL");
+MODULE_VERSION(ACERHK_VERSION);
 
-#ifndef KERNEL26
+#ifdef KERNEL_PRE_26
 EXPORT_NO_SYMBOLS;
 #endif
 
