@@ -1,5 +1,15 @@
 ******************************************************************************
 
+Q: The driver works perfectly when using force_series, what is needed to add
+autodetection?
+
+A: I need the model name of the laptop, if you do not see a usable name in
+/proc/driver/acerhk/info please try the tools dmidecode/biosdecode/vpddecode
+to find this name. You can also load the driver and then look into the bios
+directly by scanning the memory which is mapped by the driver.
+
+******************************************************************************
+
 Q: I have a (non Acer) notebook which is not recognized by your driver but I
 think it should. What information do you need?
 
