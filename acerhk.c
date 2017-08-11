@@ -8,6 +8,8 @@
  *                laptops special keys
  * Author:        Olaf Tauber <olaf-tauber@versanet.de>
  * Created at:    Mon Apr 29 22:16:42 2002
+ * Modified at    Fri Aug 11 16:08:37 2017
+ * Modified by:   Bene81 <Bene81@users.noreply.github.com>
  * Modified at:   Mon Nov 12 20:53:56 2007
  * Modified by:   Olaf Tauber <ole@smeagol>
  * Modified at:   Thu Nov 24 13:03:01 2005
