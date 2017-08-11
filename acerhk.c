@@ -36,7 +36,7 @@
  */
 
 #ifndef AUTOCONF_INCLUDED
-#include <linux/config.h>
+#include <generated/autoconf.h>
 #endif
 
 /* This driver is heavily dependent on the architecture, don't let
