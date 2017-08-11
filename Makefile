@@ -14,7 +14,7 @@ KERNELMAJOR=$(shell echo $(KERNELVERSION)|head -c3)
 CONFIG_ACERHK?=m
 obj-$(CONFIG_ACERHK) += acerhk.o
 
-CFLAGS+=-c -Wall -Wstrict-prototypes -Wno-trigraphs -O2 -fomit-frame-pointer -fno-strict-aliasing -fno-common -pipe
+EXTRA_CFLAGS+=-c -Wall -Wstrict-prototypes -Wno-trigraphs -O2 -fomit-frame-pointer -fno-strict-aliasing -fno-common -pipe
 INCLUDE=-I$(KERNELSRC)/include
 
 ifeq ($(KERNELMAJOR), 2.6)
