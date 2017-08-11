@@ -588,7 +588,6 @@ static asmlinkage void call_bios_6xx(struct register_buffer *buf)
 						 "movl %%edi, 16(%%ebp)\n\t"
 						 "movl %%esi, 20(%%ebp)\n\t"
              "popa\n\t"
-             "popl %%ebp\n\t"
 						 :
 						 :"m" (bios_routine), "m" (buf)
 						 :"%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi"
@@ -624,7 +623,6 @@ static asmlinkage void call_bios_52x(struct register_buffer *buf)
 						 "movl %%edi, 16(%%ebp)\n\t"
 						 "movl %%esi, 20(%%ebp)\n\t"
              "popa\n\t"
-             "popl %%ebp\n\t"
 						 :
 						 :"m" (bios_routine), "m" (preg400), "m" (buf)
 						 :"%eax", "%ebx", "%ecx", "%edx", "%edi", "%esi"
