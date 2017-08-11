@@ -1,57 +1,82 @@
 #!/usr/bin/make -f
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+#include /usr/share/quilt/quilt.make
 
-include /usr/share/quilt/quilt.make
+psource:=acerhk-source
+sname:=acerhk
+PACKAGE=acerhk-modules
+MA_DIR ?= /usr/share/modass
+-include $(MA_DIR)/include/generic.make
+-include $(MA_DIR)/include/common-rules.make
 
-build: build-stamp
-build-stamp: $(QUILT_STAMPFN)
-	dh_testdir
-	touch $@
+kdist_config: prep-deb-files
 
-clean: unpatch
-	dh_testdir
-	dh_testroot
-	dh_clean build-stamp install-stamp
+kdist_clean:
+	$(MAKE) clean
 
-install: build install-stamp
-install-stamp:
+build: patch
+
+install: DH_OPTIONS=
+install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
-	
-	install -D -m 0755 debian/rules.modules \
-		debian/tmp/modules/acerhk/debian/rules
-	
-	for f in *.modules.in control compat copyright changelog; do \
-		install -m 0644 debian/$$f debian/tmp/modules/acerhk/debian/; \
-	done
-	
-	install -m 0644 Makefile *.[ch] debian/tmp/modules/acerhk/
-		
-	mkdir -p debian/acerhk-source/usr/src/
-	tar jcf debian/acerhk-source/usr/src/acerhk.tar.bz2 \
-		-C debian/tmp modules
-	
-	touch $@
-
-binary-arch: build install
-# We have nothing to do by default.
-
-binary-indep: build install
-	dh_testdir
-	dh_testroot
+	dh_installdirs
+	dh_installdirs -p$(psource)  usr/src/modules/$(sname)/debian
+	cp acerhk.c acerhk.h README NEWS Makefile \
+	        debian/$(psource)/usr/src/modules/$(sname)
+	cp -a doc \
+		debian/$(psource)/usr/src/modules/$(sname)
+	cp debian/*modules.in* \
+		debian/$(psource)/usr/src/modules/$(sname)/debian
+	cp debian/docs debian/rules debian/changelog debian/copyright \
+		debian/compat debian/$(psource)/usr/src/modules/$(sname)/debian/
+	sed -i 's!^\(include /usr/share/quilt/quilt.make\)$$!#\1!' debian/$(psource)/usr/src/modules/$(sname)/debian/rules
+	cd debian/$(psource)/usr/src && tar c modules | bzip2 -9 > $(sname).tar.bz2 && rm -rf modules
 	dh_install
+
+clean: unpatch
+	dh_testdir
+	export KERNELSRC=$(KSRC)
+	$(MAKE) clean
+	dh_clean
+
+binary-modules:
+	dh_testroot
+	dh_clean -k
+	dh_installdirs lib/modules/$(KVERS)/misc
+	export KERNELSRC=$(KSRC)
+	$(MAKE) KERNELSRC=$(KSRC) KERNELVERSION=$(KVERS)
+	cp acerhk.ko debian/$(PKGNAME)/lib/modules/$(KVERS)/misc
+	dh_installmodules
 	dh_installdocs
 	dh_installchangelogs
-	dh_link
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-	dh_gencontrol
+	dh_gencontrol -- -v$(VERSION)
 	dh_md5sums
-	dh_builddeb
+	dh_builddeb --destdir=$(DEB_DESTDIR)
+	dh_clean -k
 
-binary: binary-indep binary-arch
-.PHONY: build clean install binary-indep binary-arch binary
+
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+	dh_installchangelogs  -i
+	dh_installdocs -i
+	dh_installexamples -i
+	dh_link -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_installdeb -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+binary-arch:
+
+binary: binary-indep
+.PHONY: build clean binary-indep binary-arch binary install binary-modules kdist kdist_configure kdist_image kdist_clean

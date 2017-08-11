@@ -1,20 +1,32 @@
 Source: acerhk
-Section: net
+Section: misc
 Priority: optional
-Maintainer: Kel Modderman <kel@otaku42.de>
-Build-Depends: debhelper (>= 6), bzip2
+Maintainer: Adam Cécile (Le_Vert) <gandalf@le-vert.net>
+Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.3
-Vcs-Svn: svn://svn.berlios.de/fullstory/acerhk/trunk
-Vcs-Browser: http://svn.berlios.de/wsvn/fullstory/acerhk/trunk/
 Homepage: http://www.cakey.de/acerhk/
 
 Package: acerhk-modules-_KVERS_
-Architecture: i386
-Depends: linux-image-_KVERS_
+Architecture: any
 Provides: acerhk-modules
-Description: Acer Hotkey driver for Linux (kernel _KVERS_)
- This package contains the loadable kernel modules for the acerhk
- hotkey driver.
+Description: acerhk modules for Linux (kernel _KVERS_).
+ This package contains the set of loadable kernel modules for the
+ acerhk driver.
  .
- The modules were compiled to be compatible with the kernel in the
- _KVERS_ package.
+ This driver will give access to the special keys on notebooks of the
+ Acer Travelmate series, which are not handled by the keyboard
+ driver.
+ .
+ It also works on notebooks from other manufacturers (some Medion,
+ Fujitsu-Siemens, Compal, Xbook...).
+ .
+ It also has some other related functionality (depending on the model):
+   * controlling LEDs (Mail, Wireless)
+   * enable/disable wireless hardware
+ .
+ This package contains the compiled kernel modules for _KVERS_
+ .
+ If you have compiled your own kernel, you will most likely need to build
+ your own acerhk-modules. The acerhk-source package has been
+ provided for use with the Debian's module-assistant or kernel-package
+ utilities to produce a version of acerhk-modules for your kernel.
