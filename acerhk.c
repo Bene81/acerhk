@@ -2827,10 +2827,10 @@ static void acerhk_proc_cleanup(void)
 
 /* {{{ file operations */
 
-static int acerhk_ioctl( struct inode *inode, struct file *file,
+static long acerhk_unlocked_ioctl( struct file *file,
                          unsigned int cmd, unsigned long arg )
 {
-  int retval;
+  long retval;
   switch( cmd ) {
   case ACERHK_GET_KEYCOUNT:
     {
@@ -2938,7 +2938,7 @@ static int acerhk_resume(struct platform_device *dev)
 
 static struct file_operations acerhk_fops = {
   owner:        THIS_MODULE,
-  ioctl:        acerhk_ioctl,
+  unlocked_unlocked_ioctl:        acerhk_ioctl,
   open:         acerhk_open,
 #ifdef ACERDEBUG
   write:        acerhk_write,
